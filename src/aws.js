@@ -28,11 +28,11 @@ function buildUserDataScript(githubRegistrationToken, label) {
   }
 }
 
-function buildUserDataResume(githubRegistrationToken, label) {
+function buildUserDataResume(githubRegistrationToken) {
   return [
       '#!/bin/bash',
       'cd ~/actions-runner/',
-      `./config.sh --url https://github.com/${config.githubContext.owner}/${config.githubContext.repo} --token ${githubRegistrationToken} --labels ${label}`,
+      `./config.sh --url https://github.com/${config.githubContext.owner}/${config.githubContext.repo} --token ${githubRegistrationToken} --labels asana-dbt-runner`,
       './run.sh',
   ];
 }
@@ -66,10 +66,10 @@ async function startEc2Instance(label, githubRegistrationToken) {
   }
 }
 
-async function resumeEc2Instance(ec2InstanceId) {
+async function resumeEc2Instance(ec2InstanceId, githubRegistrationToken) {
    const ec2 = new AWS.EC2();
 
-   const userData = buildUserDataResume(githubRegistrationToken, label);
+   const userData = buildUserDataResume(githubRegistrationToken);
 
    const params = {
      InstanceIds: [ec2InstanceId],
@@ -78,6 +78,7 @@ async function resumeEc2Instance(ec2InstanceId) {
 
    try {
      const result = await ec2.startInstances(params).promise();
+     const ec2InstanceId = result.Instances[0].InstanceId;
      core.info(`AWS EC2 instance ${ec2InstanceId} is started`);
      return ec2InstanceId;
   } catch (error) {
@@ -154,12 +155,12 @@ async function waitForInstanceStopped(ec2InstanceId) {
   }
 }
 
-async function startRunner(ec2InstanceId) {
+async function startRunner(ec2InstanceId, githubRegistrationToken) {
   const ssm = new AWS.SSM();
 
   const commands = [
     'cd ~/actions-runner/',
-    `./config.sh --url https://github.com/${config.githubContext.owner}/${config.githubContext.repo} --token ${githubRegistrationToken} --labels ${label}`,
+    `./config.sh --url https://github.com/${config.githubContext.owner}/${config.githubContext.repo} --token ${githubRegistrationToken} --labels asana-dbt-runner`,
     './run.sh',
   ];
 
