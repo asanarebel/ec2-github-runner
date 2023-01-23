@@ -43,6 +43,7 @@ function buildUserDataResume(githubRegistrationToken, label) {
   ];
 }
 
+
 async function startEc2Instance(label, githubRegistrationToken) {
   const ec2 = new AWS.EC2();
 
