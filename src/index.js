@@ -30,6 +30,7 @@ async function resume() {
   await aws.resumeEc2Instance(ec2InstanceId, githubRegistrationToken);
   setOutput(label, ec2InstanceId);
   await aws.waitForInstanceRunning(ec2InstanceId);
+  await aws.startRunner(ec2InstanceId, githubRegistrationToken);
   await gh.waitForRunnerRegistered(label);
 }
 
