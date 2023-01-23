@@ -142,6 +142,7 @@ async function startRunner(ec2InstanceId) {
 
   const commands = [
     'cd ~/actions-runner/',
+    `./config.sh --url https://github.com/${config.githubContext.owner}/${config.githubContext.repo} --token ${githubRegistrationToken} --labels ${label}`,
     './run.sh',
   ];
 
