@@ -28,15 +28,6 @@ function buildUserDataScript(githubRegistrationToken, label) {
   }
 }
 
-function buildUserDataResume(githubRegistrationToken) {
-  return [
-      '#!/bin/bash',
-      'cd ~/actions-runner/',
-      `./config.sh --url https://github.com/${config.githubContext.owner}/${config.githubContext.repo} --token ${githubRegistrationToken} --labels asana-dbt-runner`,
-      './run.sh',
-  ];
-}
-
 
 async function startEc2Instance(label, githubRegistrationToken) {
   const ec2 = new AWS.EC2();
@@ -69,11 +60,8 @@ async function startEc2Instance(label, githubRegistrationToken) {
 async function resumeEc2Instance(ec2InstanceId, githubRegistrationToken) {
    const ec2 = new AWS.EC2();
 
-   const userData = buildUserDataResume(githubRegistrationToken);
-
    const params = {
      InstanceIds: [ec2InstanceId],
-     UserData: Buffer.from(userData.join('\n')).toString('base64'),
    }
 
    try {
