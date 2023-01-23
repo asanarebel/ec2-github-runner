@@ -27,7 +27,7 @@ async function resume() {
   const githubRegistrationToken = await gh.getRegistrationToken();
   const ec2InstanceId = config.input.ec2InstanceId;
   await aws.waitForInstanceStopped(ec2InstanceId);
-  await aws.resumeEc2Instance(ec2InstanceId, githubRegistrationToken);
+  await aws.resumeEc2Instance(ec2InstanceId);
   setOutput(label, ec2InstanceId);
   await aws.waitForInstanceRunning(ec2InstanceId);
   await aws.startRunner(ec2InstanceId, githubRegistrationToken);
