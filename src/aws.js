@@ -28,6 +28,16 @@ function buildUserDataScript(githubRegistrationToken, label) {
   }
 }
 
+function buildUserDataResume(githubRegistrationToken, label) {
+  return [
+      '#!/bin/bash',
+      'cd ~/actions-runner/',
+      `./config.sh --url https://github.com/${config.githubContext.owner}/${config.githubContext.repo} --token ${githubRegistrationToken} --labels ${label}`,
+      './run.sh',
+  ];
+}
+
+
 async function startEc2Instance(label, githubRegistrationToken) {
   const ec2 = new AWS.EC2();
 
@@ -59,8 +69,15 @@ async function startEc2Instance(label, githubRegistrationToken) {
 async function resumeEc2Instance(ec2InstanceId) {
    const ec2 = new AWS.EC2();
 
+   const userData = buildUserDataResume(githubRegistrationToken, label);
+
+   const params = {
+     InstanceIds: [ec2InstanceId],
+     UserData: Buffer.from(userData.join('\n')).toString('base64'),
+   }
+
    try {
-     const result = await ec2.startInstances({InstanceIds: [ec2InstanceId]}).promise();
+     const result = await ec2.startInstances(params).promise();
      core.info(`AWS EC2 instance ${ec2InstanceId} is started`);
      return ec2InstanceId;
   } catch (error) {
