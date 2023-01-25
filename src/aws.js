@@ -143,7 +143,9 @@ async function startRunner(ec2InstanceId, githubRegistrationToken) {
 
   const commands = [
     'cd ~/actions-runner/',
+    'echo "configuring gh runner"',
     `./config.sh --url https://github.com/${config.githubContext.owner}/${config.githubContext.repo} --token ${githubRegistrationToken} --labels asana-dbt-runner`,
+    'echo "running run.sh"',
     './run.sh',
   ];
 
